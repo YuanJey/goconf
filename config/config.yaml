@@ -1,0 +1,24 @@
+server:
+  port: 8000
+  host: 120.46.33.85
+  appAk: RRXTNDBAFZTWKTUC
+  appSk: SKinxthmxkbioooo
+#  appAk: kdocs.plugins.rj.jsimks
+#  appSk: QsozskghVSzaMV7PbNpd1bLrBvQjRP2W
+  fileAddr: http://120.46.33.85
+  driveId: 282064702177280
+wps:
+  addr: http://encs-pri-cams-engine/i/docmini
+  syncAddr: http://encs-pri-cams-engine
+  companyId: 1
+  platformId: 1
+log:
+  storageLocation: ./logs/
+  rotationTime: 24
+  remainRotationCount: 2 #日志数量
+  #日志级别 6表示全都打印，测试阶段建议设置为6
+  remainLogLevel: 6
+  elasticSearchSwitch: false
+  elasticSearchAddr: [ 127.0.0.1:9201 ]
+  elasticSearchUser: ""
+  elasticSearchPassword: ""
