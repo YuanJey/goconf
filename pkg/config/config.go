@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -33,6 +34,9 @@ type config struct {
 	Test struct {
 		GoVERSION string `yaml:"dbPassWord" env:"GOPATH"`
 	}
+	Test2 struct {
+		A string `json:"a"`
+	} `env_json:"test2"`
 }
 
 /*
@@ -134,6 +138,18 @@ func loadEnv(config interface{}) {
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)
 		fieldType := typ.Field(i)
+
+		envJsonTag := fieldType.Tag.Get("env_json")
+		if envJsonTag != "" {
+			envValue := os.Getenv(envJsonTag)
+			if envValue != "" {
+				err := json.Unmarshal([]byte(envValue), field.Addr().Interface())
+				if err != nil {
+					fmt.Println(fmt.Errorf("invalid value for %s: %v", envJsonTag, err))
+				}
+			}
+		}
+
 		// Check if the field is a struct and need to recursively process it.
 		if field.Kind() == reflect.Struct {
 			// Recursively call loadEnv for nested structs
@@ -172,6 +188,12 @@ func loadEnv(config interface{}) {
 				continue
 			}
 			field.SetBool(boolValue)
+		case reflect.Struct:
+			err := json.Unmarshal([]byte(envValue), field.Addr().Interface())
+			if err != nil {
+				fmt.Println(fmt.Errorf("invalid value for %s: %v", envTag, err))
+				continue
+			}
 		default:
 			fmt.Println(fmt.Errorf("unsupported type for %s", envTag))
 			continue
