@@ -35,38 +35,53 @@ type config struct {
 	}
 }
 
-func UnmarshalConfig(config interface{}, configName string) {
-	var env string
-	if configName == "config.yaml" {
-		env = "CONFIG_NAME"
-	} else {
-		panic("configName must be config.yaml")
-	}
-	cfgName := os.Getenv(env)
-	if len(cfgName) != 0 {
-		bytes, err := os.ReadFile(filepath.Join(cfgName, "config", configName))
-		if err != nil {
-			bytes, err = os.ReadFile(filepath.Join(Root, "config", configName))
+/*
+	func UnmarshalConfig(config interface{}, configName string) {
+		var env string
+		if configName == "config.yaml" {
+			env = "CONFIG_NAME"
+		} else {
+			panic("configName must be config.yaml")
+		}
+		cfgName := os.Getenv(env)
+		if len(cfgName) != 0 {
+			bytes, err := os.ReadFile(filepath.Join(cfgName, "config", configName))
 			if err != nil {
-				panic(err.Error() + " config: " + filepath.Join(cfgName, "config", configName))
+				bytes, err = os.ReadFile(filepath.Join(Root, "config", configName))
+				if err != nil {
+					panic(err.Error() + " config: " + filepath.Join(cfgName, "config", configName))
+				}
+			} else {
+				Root = cfgName
+			}
+			if err = yaml.Unmarshal(bytes, config); err != nil {
+				panic(err.Error())
 			}
 		} else {
-			Root = cfgName
-		}
-		if err = yaml.Unmarshal(bytes, config); err != nil {
-			panic(err.Error())
-		}
-	} else {
-		bytes, err := os.ReadFile(fmt.Sprintf("%s", configName))
-		if err != nil {
-			bytes, err = os.ReadFile(fmt.Sprintf("./config/%s", configName))
+			bytes, err := os.ReadFile(fmt.Sprintf("%s", configName))
 			if err != nil {
-				panic(err.Error() + configName)
+				bytes, err = os.ReadFile(fmt.Sprintf("./config/%s", configName))
+				if err != nil {
+					panic(err.Error() + configName)
+				}
+			}
+			if err = yaml.Unmarshal(bytes, config); err != nil {
+				panic(err.Error())
 			}
 		}
-		if err = yaml.Unmarshal(bytes, config); err != nil {
-			panic(err.Error())
+		loadEnv(config)
+	}
+*/
+func UnmarshalConfig(config interface{}, configName string) {
+	bytes, err := os.ReadFile(fmt.Sprintf("%s", configName))
+	if err != nil {
+		bytes, err = os.ReadFile(fmt.Sprintf("./config/%s", configName))
+		if err != nil {
+			panic(err.Error() + configName)
 		}
+	}
+	if err = yaml.Unmarshal(bytes, config); err != nil {
+		panic(err.Error())
 	}
 	loadEnv(config)
 }
